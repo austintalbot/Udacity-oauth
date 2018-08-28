@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect,jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect,jsonify, url_for, flash, session as login_session
 app = Flask(__name__)
+import random, string
 
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -7,17 +8,23 @@ from database_setup import Base, Restaurant, MenuItem
 
 
 #Connect to Database and create database session
-engine = create_engine('sqlite:///restaurantmenu.db')
+engine = create_engine('sqlite:///restaurantmenu.db',
+                        connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+@app.route('/login')
+def showLoing():
+    state = ''.join(random.choice(string.ascii_uppercase+string.digits) for x in range(32))
+    login_session['state']= state
+    # return "the current session state is %s" %login_session['state']
+    return render_template('login.html')
 
 #JSON APIs to view Restaurant Information
 @app.route('/restaurant/<int:restaurant_id>/menu/JSON')
 def restaurantMenuJSON(restaurant_id):
-    restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
     return jsonify(MenuItems=[i.serialize for i in items])
 
@@ -37,7 +44,7 @@ def restaurantsJSON():
 @app.route('/')
 @app.route('/restaurant/')
 def showRestaurants():
-  restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
+  restaurants = session.query(Restaurant).order_by(asc(Restaurant.name)).all()
   return render_template('restaurants.html', restaurants = restaurants)
 
 #Create a new restaurant
