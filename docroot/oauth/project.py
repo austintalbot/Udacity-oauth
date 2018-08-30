@@ -228,6 +228,9 @@ def editRestaurant(restaurant_id):
         return redirect('/login')
     editedRestaurant = session.query(
         Restaurant).filter_by(id=restaurant_id).one()
+    if editedRestaurant.user_id != login_session['user_id']:
+        return """<script>function myfunction()
+        {alert('you are not authorized to edit this restaurant. please create your own restaurant in order to edit.');}</script><body onload='myfunction'>"""
     if request.method == 'POST':
         if request.form['name']:
             editedRestaurant.name = request.form['name']
