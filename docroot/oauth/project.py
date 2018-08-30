@@ -170,13 +170,11 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        flash("Successfully disconnected.")
+        return render_template('publicrestaurants.html')
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        flash("Failed to revoke token for given user.")
+        return render_template('publicrestaurants.html')
 
 
 #JSON APIs to view Restaurant Information
