@@ -470,3 +470,4 @@ ASALocalRun/
 restaurantmenu.db
 /static/client_secrets.json
 vagrantfile
+restaurantmenuWithUsers.db
