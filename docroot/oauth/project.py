@@ -181,16 +181,25 @@ def fbconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     access_token = request.data
-    
+    print(request)
+
+
+
+
+
+
+
     print ("access token: %s " % access_token)
+
+    access_token = access_token.decode().split("'")[0]
 
     app_id = json.loads(open('./static/facebook_secret.json', 'r').read())['web']['app_id']
     print( 'app_id:%s' %app_id)
 
     app_secret = json.loads(open('./static/facebook_secret.json', 'r').read())['web']['app_secret']
     print( 'app_secret:%s' %app_secret)
-
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % ( app_id, app_secret, access_token)
+    # url = 'https://graph.facebook.com/v3.1/oauth/access_token?client_id={app-id}&redirect_uri={redirect-uri}&client_secret={app-secret}&code={code-parameter}
+    url = 'https://graph.facebook.com/v3.1/oauth/access_token?client_id=%s&redirect_uri=%s&client_secret=%s&code=%s'%(app_id,'https://localhost:5000' , app_secret, access_token)
     print(url)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
@@ -206,27 +215,40 @@ def fbconnect():
     #     api calls
     # '''
 
-    # print(result)
-    token = result.split(',')[0].split(':')[1].replace('"', '')
+    print(result)
 
     url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     print ("url sent for API access:%s"% url)
     print ("API JSON result: %s" % result)
+
+    result =  result.decode().split("'")[0]
+    result =str( result)
+    print(result)
+    # The token must be stored in the login_session in order to properly logout
+    login_session['access_token'] = access_token
     data = json.loads(result)
     login_session['provider'] = 'facebook'
     login_session['username'] = data["name"]
     login_session['email'] = data["email"]
     login_session['facebook_id'] = data["id"]
 
-    # The token must be stored in the login_session in order to properly logout
-    login_session['access_token'] = token
+
 
     # Get user picture
-    url = 'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
+
+    #     "https://graph.facebook.com/v3.1/{user-id}/picture"
+
+    url = 'https://graph.facebook.com/v3.1/%s/picture?access_token=%s&redirect=0&height=200&width=200' % (data["id"],login_session['access_token'])
+    print(url)
+
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
+
+    print(result)
+    result =  result.decode().split("'")[0]
+    result =str( result)
     data = json.loads(result)
 
     login_session['picture'] = data["data"]["url"]
@@ -258,6 +280,7 @@ def fbdisconnect():
     url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
+    print(result)
     return "you have been logged out"
 
 #JSON APIs to view Restaurant Information
