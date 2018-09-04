@@ -21,15 +21,10 @@
 
     <!-- GOOGLE PLUS SIGN IN BUTTON-->
     <div id="signinButton">
-        <span class="g-signin"
-              data-scope="openid email"
-              data-clientid="771521110814-j7t7ap44ve2oldbndek7kk4un44gh7e0.apps.googleusercontent.com"
-              data-redirecturi="postmessage"
-              data-accesstype="offline"
-              data-cookiepolicy="single_host_origin"
-              data-callback="signInCallback"
-              >
-            </span>
+        <span class="g-signin" data-scope="openid email" data-clientid="771521110814-j7t7ap44ve2oldbndek7kk4un44gh7e0.apps.googleusercontent.com"
+            data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin"
+            data-callback="signInCallback">
+        </span>
     </div>
     <div id="result"></div>
     <script>
@@ -65,8 +60,6 @@
         }
     </script>
 
-
-
     <!--END GOOGLE PLUS SIGN IN BUTTON -->
 
     <!--FACEBOOK SIGN IN -->
@@ -74,19 +67,23 @@
         window.fbAsyncInit = function () {
             FB.init({
                 appId: '637432479983738',
-                cookie: true, // enable cookies to allow the server to access 
-                // the session
-                xfbml: true, // parse social plugins on this page
-                version: 'v2.2' // use version 2.2
+                cookie: true,
+                xfbml: true,
+                version: 'v2.8'
             });
+
+            FB.AppEvents.logPageView();
+
         };
-        // Load the SDK asynchronously
+
         (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
+            if (d.getElementById(id)) {
+                return;
+            }
             js = d.createElement(s);
             js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js";
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
         // Here we run a very simple test of the Graph API after login is

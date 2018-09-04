@@ -181,31 +181,35 @@ def fbconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     access_token = request.data
-    print ("access token received %s " % access_token)
+    
+    print ("access token: %s " % access_token)
 
+    app_id = json.loads(open('./static/facebook_secret.json', 'r').read())['web']['app_id']
+    print( 'app_id:%s' %app_id)
 
-    app_id = json.loads(open('./static/facebooksecret.json', 'r').read())[
-        'web']['app_id']
-    app_secret = json.loads(
-        open('./static/facebook_secret.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
-        app_id, app_secret, access_token)
+    app_secret = json.loads(open('./static/facebook_secret.json', 'r').read())['web']['app_secret']
+    print( 'app_secret:%s' %app_secret)
+
+    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % ( app_id, app_secret, access_token)
+    print(url)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-
+    print (result)
 
     # Use token to get user info from API
-    userinfo_url = "https://graph.facebook.com/v2.8/me"
-    '''
-        Due to the formatting for the result from the server token exchange we have to
-        split the token first on commas and select the first index which gives us the key : value
-        for the server access token then we split it on colons to pull out the actual token value
-        and replace the remaining quotes with nothing so that it can be used directly in the graph
-        api calls
-    '''
+    # userinfo_url = "https://graph.facebook.com/v2.8/me"
+    # '''
+    #     Due to the formatting for the result from the server token exchange we have to
+    #     split the token first on commas and select the first index which gives us the key : value
+    #     for the server access token then we split it on colons to pull out the actual token value
+    #     and replace the remaining quotes with nothing so that it can be used directly in the graph
+    #     api calls
+    # '''
+
+    # print(result)
     token = result.split(',')[0].split(':')[1].replace('"', '')
 
-    url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % token
+    url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     print ("url sent for API access:%s"% url)
@@ -407,10 +411,12 @@ def deleteMenuItem(restaurant_id, menu_id):
 def disconnect():
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
+            print('google')
             gdisconnect()
             del login_session['gplus_id']
             del login_session['access_token']
         if login_session['provider'] == 'facebook':
+            print('facebook')
             fbdisconnect()
             del login_session['facebook_id']
         del login_session['username']
