@@ -471,3 +471,4 @@ restaurantmenu.db
 /static/client_secrets.json
 vagrantfile
 restaurantmenuWithUsers.db
+docroot/oauth/static/facebook_secret.json
