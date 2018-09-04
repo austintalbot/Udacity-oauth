@@ -42,11 +42,11 @@
                     success: function (result) {
                         // Handle or verify the server response if necessary.
                         if (result) {
-                            $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...')
+                            $('#result').html('Login Successful!</br>' + result +
+                                '</br>Redirecting...')
                             setTimeout(function () {
                                 window.location.href = "/restaurant";
                             }, 4000);
-
                         } else if (authResult['error']) {
                             console.log('There was an error: ' + authResult['error']);
                         } else {
@@ -69,7 +69,7 @@
                 appId: '637432479983738',
                 cookie: true,
                 xfbml: true,
-                version: 'v2.8'
+                version: 'v3.1'
             });
 
             FB.AppEvents.logPageView();
