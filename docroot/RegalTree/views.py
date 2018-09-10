@@ -4,11 +4,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 
 
-engine = create_engine('sqlite:///regalTree.db')
+engine = create_engine('sqlite:///regalTree.db',connect_args={'check_same_thread': False})
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
@@ -18,11 +18,27 @@ app = Flask(__name__)
 
 
 
-#ADD @auth.verify_password decorator here
+
+@auth.verify_password
+def verify_password(username_or_token, password):
+    #Try to see if it's a token first
+    user_id = User.verify_auth_token(username_or_token)
+    if user_id:
+        user = session.query(User).filter_by(id = user_id).one()
+    else:
+        user = session.query(User).filter_by(username = username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+    g.user = user
+    return True
 
 
-#add /token route here to get a token for a user with login credentials
 
+@app.route('/token')
+@auth.login_required
+def get_auth_token():
+    token = g.user.generate_auth_token()
+    return jsonify({'token': token.decode('ascii')})
 
 
 
@@ -85,7 +101,7 @@ def showCategoriedProducts(category):
         return jsonify(legume_products = [l.serialize for l in legume_items])
     if category == 'vegetable':
         vegetable_items = session.query(Product).filter_by(category = 'vegetable').all()
-        return jsonify(produce_products = [p.serialize for p in produce_items])
+        return jsonify(produce_products = [p.serialize for p in vegetable_items])
 
 
 
