@@ -1,50 +1,29 @@
 from models import Base, User
-
 from flask import Flask, jsonify, request, url_for, abort, g, render_template
-
 from sqlalchemy.ext.declarative import declarative_base
-
 from sqlalchemy.orm import relationship, sessionmaker
-
 from sqlalchemy import create_engine
-
-
 from flask_httpauth import HTTPBasicAuth
-
 import json
 
-
 # NEW IMPORTS
-
 from oauth2client.client import flow_from_clientsecrets
-
 from oauth2client.client import FlowExchangeError
-
 import httplib2
-
 from flask import make_response
-
 import requests
-
-
 auth = HTTPBasicAuth()
-
-
-engine = create_engine('sqlite:///usersWithOAuth.db')
-
-
+engine = create_engine(
+    'sqlite:///usersWithOAuth.db', connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
 
 session = DBSession()
 
 app = Flask(__name__)
 
-
-CLIENT_ID = json.loads(
-
-    open('./static/client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open('./static/client_secrets.json',
+                            'r').read())['web']['client_id']
 
 
 @auth.verify_password
@@ -104,8 +83,8 @@ def login(provider):
 
         except FlowExchangeError:
 
-            response = make_response(json.dumps(
-                'Failed to upgrade the authorization code.'), 401)
+            response = make_response(
+                json.dumps('Failed to upgrade the authorization code.'), 401)
 
             response.headers['Content-Type'] = 'application/json'
 
@@ -115,8 +94,8 @@ def login(provider):
 
         access_token = credentials.access_token
 
-        url = (
-            'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
+        url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+               % access_token)
 
         h = httplib2.Http()
 
@@ -164,7 +143,8 @@ def login(provider):
 
         #     return response
 
-        print(("Step 2 Complete! Access Token : %s " % credentials.access_token))
+        print(
+            ("Step 2 Complete! Access Token : %s " % credentials.access_token))
 
         # STEP 3 - Find User or make a new one
 
