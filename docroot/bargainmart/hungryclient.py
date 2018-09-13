@@ -6,9 +6,6 @@ h = httplib2.Http()
 
 address = 'http://localhost:5000/catalog'
 
-# if url == "":
-#     url = "http://localhost:5000/catalog"
-
 req_per_minute = float(
     eval(input("Please specify the number of requests per minute:  ")))
 interval = (60.0 / req_per_minute)

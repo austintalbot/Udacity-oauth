@@ -36,23 +36,16 @@ class User(Base):
         s = Serializer(secret_key)
         try:
             data = s.loads(token)
-
         except SignatureExpired:
-
             #Valid Token, but expired
-
             return None
 
         except BadSignature:
-
             #Invalid Token
-
             return None
 
         user_id = data['id']
-
         return user_id
-
 
 engine = create_engine('sqlite:///paleKale.db')
 
