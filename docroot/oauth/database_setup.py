@@ -8,7 +8,6 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'user'
-
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
@@ -17,7 +16,6 @@ class User(Base):
 
 class Restaurant(Base):
     __tablename__ = 'restaurant'
-
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -34,7 +32,6 @@ class Restaurant(Base):
 
 class MenuItem(Base):
     __tablename__ = 'menu_item'
-
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
@@ -58,6 +55,5 @@ class MenuItem(Base):
 
 
 engine = create_engine('sqlite:///restaurantmenuwithusers.db')
-
 
 Base.metadata.create_all(engine)
