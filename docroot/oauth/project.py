@@ -14,7 +14,6 @@ app = Flask(__name__)
 CLIENT_ID = json.loads(open('./static/client_secrets.json',
                             'r').read())['web']['client_id']
 
-
 # Connect to Database and create database session
 engine = create_engine(
     'sqlite:///restaurantmenuwithusers.db',
@@ -494,7 +493,5 @@ def disconnect():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = False
-    app.run(
-        host='0.0.0.0',
-        port=5000)
-        # ssl_context=('./static/cert.pem', './static/key.pem'))
+    app.run(host='0.0.0.0', port=5000)
+    # ssl_context=('./static/cert.pem', './static/key.pem'))
